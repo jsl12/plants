@@ -9,6 +9,7 @@ class Plant:
 
         self.name = self.soup.find(class_='title').get_text()
         self.species = self.soup.find(class_=re.compile('.*species', re.I)).get_text()
+        self.care = self.get_care()
 
     def get_soup(self, url):
         return bs4.BeautifulSoup(requests.get(url).content, 'lxml')
@@ -20,16 +21,17 @@ class Plant:
         return res
 
     def extract_text(self, div):
-        res = []
+        res = ''
         for c in div.children:
             if isinstance(c, bs4.NavigableString):
-                res.append(c.strip())
+                res += c
             elif isinstance(c, bs4.Tag):
-                res.append(next(c.strings).strip())
-        res = ' '.join(res)
+                res += next(c.strings)
+        res = res.replace('  ', ' ')
+        res = res.replace(' ,', ',')
+        res = res.replace(' .', '.')
         return res
 
 if __name__ == '__main__':
     p = Plant('https://www.houseplant411.com/houseplant/how-to-grow-an-african-violet-plant-care-guide-saintpaulia-ionantha')
-    p.get_care()
     pass
