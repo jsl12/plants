@@ -12,6 +12,7 @@ class Plant:
         self.care = self.get_care()
 
     def get_soup(self, url):
+        print('Making soup from: {}'.format(url))
         return bs4.BeautifulSoup(requests.get(url).content, 'lxml')
 
     def get_care(self):
@@ -27,10 +28,28 @@ class Plant:
                 res += c
             elif isinstance(c, bs4.Tag):
                 res += next(c.strings)
-        res = res.replace('  ', ' ')
-        res = res.replace(' ,', ',')
-        res = res.replace(' .', '.')
+        res = self.correct_text(res)
         return res
+
+    def correct_text(self, text):
+        text = text.replace('  ', ' ')
+        text = text.replace(' ,', ',')
+        text = text.replace(' .', '.')
+        return text
+
+    def to_dict(self):
+        return {
+            'URL': self.url,
+            'Name': self.name,
+            'Species': self.species,
+            'Care': self.care
+        }
+
+    def from_dict(self, dict):
+        self.url = dict['URL']
+        self.name = dict['Name']
+        self.species = dict['Species']
+        self.care = dict['Care']
 
 if __name__ == '__main__':
     p = Plant('https://www.houseplant411.com/houseplant/how-to-grow-an-african-violet-plant-care-guide-saintpaulia-ionantha')
