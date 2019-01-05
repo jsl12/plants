@@ -9,8 +9,7 @@ def run_ssh(script_name, **kwargs):
     cmd = 'python3 '
     if len(kwargs) > 0:
         cmd += '{} '.format(script_name.name)
-        for arg in kwargs:
-            cmd += '--{} {}'.format(arg, kwargs[arg])
+        cmd += ' '.join(['--{} {}'.format(arg, kwargs[arg]) for arg in kwargs])
     else:
         cmd += script_name.name
 
@@ -27,10 +26,12 @@ def run_ssh(script_name, **kwargs):
             ssh.close()
 
     if error != '':
-        print(error)
+        for line in error.splitlines():
+            print(line)
     else:
-        print(result)
+        for line in result.splitlines():
+            print(line)
 
 if __name__ == '__main__':
-    run_ssh('plantcam.py', filename='test.png')
+    run_ssh('plantcam.py', filename='test.png', timestamp=True)
     ftp.get_pictures()
