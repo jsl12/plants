@@ -1,11 +1,13 @@
 from bs4 import BeautifulSoup
 import re
 import requests
+import plant
+import pickle
 
 class Scraper:
-    def __init__(self, base_url):
+    def __init__(self, base_url, **kwargs):
         self.base_url = base_url
-        self.pages = self.get_all_pages(max=2)
+        self.pages = self.get_all_pages(**kwargs)
         self.soups = self.create_soups(self.pages)
 
     def create_soups(self, pages):
@@ -42,7 +44,12 @@ class Scraper:
             links.update(self.get_plant_links(soup))
         return links
 
+    def get_plants(self):
+        return [plant.Plant(url) for url in self.get_all_plant_links(self.soups).values()]
+
 if __name__ == '__main__':
-    s = Scraper('https://www.houseplant411.com/houseplant')
-    s.links = s.get_all_plant_links(s.soups)
-    pass
+    s = Scraper('https://www.houseplant411.com/houseplant', max=1)
+    plants = s.get_plants()
+
+    with open('plants.p', 'wb') as file:
+        pickle.dump(plants, file)
