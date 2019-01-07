@@ -14,6 +14,7 @@ def get_pictures(result_folder=None, regex='\.(jpg|png)$'):
 
     regex = re.compile(regex)
     with ftplib.FTP(IP, USER, PASSWORD) as conn:
+        conn.cwd('images')
         files = [f for f in conn.mlsd() if regex.search(f[0]) is not None]
         for f in files:
             with open(result_folder / f[0], 'wb') as file:

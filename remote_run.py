@@ -33,5 +33,6 @@ def run_ssh(script_name, **kwargs):
             print(line)
 
 if __name__ == '__main__':
-    run_ssh('plantcam.py', filename='test.png', timestamp=True)
+    # run_ssh('plantcam.py', filename='test.jpg', timestamp=True)
+    run_ssh('timelapse.py')
     ftp.get_pictures()
