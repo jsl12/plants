@@ -17,8 +17,10 @@ def get_pictures(result_folder=None, regex='\.(jpg|png)$'):
         conn.cwd('images')
         files = [f for f in conn.mlsd() if regex.search(f[0]) is not None]
         for f in files:
-            with open(result_folder / f[0], 'wb') as file:
-                conn.retrbinary('RETR {}'.format(f[0]), file.write)
+            res_file = result_folder / f[0]
+            if not res_file.exists():
+                with open(res_file, 'wb') as file:
+                    conn.retrbinary('RETR {}'.format(f[0]), file.write)
 
 def send_file(file):
     with ftplib.FTP(IP, USER, PASSWORD) as conn:
