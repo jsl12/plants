@@ -4,14 +4,21 @@ from pathlib import Path
 from datetime import datetime
 import pandas as pd
 
-def create_gif(image_folder='images', output_file='timelapse.mp4', delay=60, **kwargs):
+def create_gif(image_folder='images',
+               output_file='timelapse.mp4',
+               framerate=None,
+               **kwargs):
     if not isinstance(image_folder, Path):
         image_folder = Path(image_folder)
     if not image_folder.is_absolute():
         image_folder = image_folder.resolve()
 
     setup_images(image_folder, **kwargs)
-    cmd = 'ffmpeg -y -f concat -safe 0 -i {} {}'.format('gif_files.txt', output_file)
+    cmd = 'ffmpeg -y'
+    cmd += ' -f concat -safe 0 -i {}'.format('gif_files.txt')
+    if framerate is not None:
+        cmd += ' -framerate {}'.format(framerate)
+    cmd += ' {}'.format(output_file)
     os.system(cmd)
 
 
@@ -19,7 +26,8 @@ def setup_images(path,
                  start=None,
                  end=None,
                  size=10**6,
-                 shorten_dark=None):
+                 shorten_dark=None,
+                 downsample=None):
     if not isinstance(path, Path):
         path = Path(path)
     assert  isinstance(path, Path)
@@ -42,6 +50,9 @@ def setup_images(path,
             df = pd.concat([df[size_mask], df[~size_mask].iloc[::shorten_dark]]).sort_index()
         else:
             df = df[size_mask]
+    if downsample is not None:
+        assert isinstance(downsample, int)
+        df = df[::downsample]
 
     FILE = Path.cwd() / 'gif_files.txt'
     with open(FILE, 'w') as file:
@@ -55,4 +66,4 @@ def timestamp(file):
     time_string = re.match('([\d\-\_]+)_.*', file.stem).group(1)
     return datetime.strptime(time_string, '%Y-%m-%d_%H%M%S')
 
-create_gif(shorten_dark=10)
+create_gif(framerate=60, downsample=25)
