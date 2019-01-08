@@ -21,6 +21,9 @@ def get_pictures(result_folder=None, regex='\.(jpg|png)$'):
             if not res_file.exists():
                 with open(res_file, 'wb') as file:
                     conn.retrbinary('RETR {}'.format(f[0]), file.write)
+                    print(res_file.name)
+            else:
+                conn.delete(f[0])
 
 def send_file(file):
     with ftplib.FTP(IP, USER, PASSWORD) as conn:
