@@ -66,4 +66,8 @@ def timestamp(file):
     time_string = re.match('([\d\-\_]+)_.*', file.stem).group(1)
     return datetime.strptime(time_string, '%Y-%m-%d_%H%M%S')
 
-create_gif(framerate=60, downsample=25)
+if __name__ == '__main__':
+    create_gif(framerate=60,
+               downsample=30,
+               size=3*(10**5),
+               shorten_dark=15)
