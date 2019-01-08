@@ -4,10 +4,10 @@ from pathlib import Path
 from datetime import datetime
 import pandas as pd
 
-def create_gif(image_folder='images',
-               output_file='timelapse.mp4',
-               framerate=None,
-               **kwargs):
+def animate(image_folder='images',
+            output_file='timelapse.mp4',
+            framerate=None,
+            **kwargs):
     if not isinstance(image_folder, Path):
         image_folder = Path(image_folder)
     if not image_folder.is_absolute():
@@ -67,7 +67,7 @@ def timestamp(file):
     return datetime.strptime(time_string, '%Y-%m-%d_%H%M%S')
 
 if __name__ == '__main__':
-    create_gif(framerate=60,
-               downsample=30,
-               size=3*(10**5),
-               shorten_dark=15)
+    animate(framerate=60,
+            downsample=30,
+            size=3*(10**5),
+            shorten_dark=15)
