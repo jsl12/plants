@@ -21,6 +21,7 @@ def get_pictures(result_folder=None, regex='\.(jpg|png)$'):
             if not res_file.exists():
                 with open(res_file, 'wb') as file:
                     conn.retrbinary('RETR {}'.format(f[0]), file.write)
+                    conn.delete(f[0])
                     print(res_file.name)
             else:
                 conn.delete(f[0])
