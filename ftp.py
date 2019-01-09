@@ -16,6 +16,7 @@ def get_pictures(result_folder=None, regex='\.(jpg|png)$'):
     with ftplib.FTP(IP, USER, PASSWORD) as conn:
         conn.cwd('images')
         files = [f for f in conn.mlsd() if regex.search(f[0]) is not None]
+        files = sorted(files)
         for f in files:
             res_file = result_folder / f[0]
             if not res_file.exists():
