@@ -6,7 +6,7 @@ IP = '192.168.1.126'
 USER = 'pi'
 PASSWORD = 'raspberry'
 
-def get_pictures(result_folder=None, regex='\.(jpg|png)$'):
+def get_pictures(result_folder=None, regex='\.(jpg|png)$', remove=True):
     if result_folder is None:
         result_folder = Path.cwd() / 'images'
     if not result_folder.exists():
@@ -22,9 +22,10 @@ def get_pictures(result_folder=None, regex='\.(jpg|png)$'):
             if not res_file.exists():
                 with open(res_file, 'wb') as file:
                     conn.retrbinary('RETR {}'.format(f[0]), file.write)
-                    conn.delete(f[0])
+                    if remove:
+                        conn.delete(f[0])
                     print(res_file.name)
-            else:
+            elif remove:
                 conn.delete(f[0])
 
 def send_file(file):
