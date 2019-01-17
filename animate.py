@@ -1,7 +1,7 @@
 import os
 import re
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta
 import pandas as pd
 
 def animate(image_folder='images',
@@ -41,9 +41,15 @@ def setup_images(path,
     }).set_index('Time')
 
     if start is not None:
-        df = df[start:]
+        if isinstance(start, int):
+            df = df.iloc[start:]
+        else:
+            df = df[start:]
     if end is not None:
-        df = df[:end]
+        if isinstance(end, int):
+            df = df.iloc[:end]
+        else:
+            df = df[:end]
     if size is not None:
         size_mask = df['Size'] > size
         if shorten_dark is not None:
@@ -58,6 +64,7 @@ def setup_images(path,
     with open(FILE, 'w') as file:
         for i, row in df.iterrows():
             file.write('file \'{}\'\n'.format(row['Path'].relative_to(Path.cwd())))
+        file.write('duration 30\n')
 
     print('{} files set up in {}'.format(len(df), FILE.name))
     return FILE
@@ -67,7 +74,14 @@ def timestamp(file):
     return datetime.strptime(time_string, '%Y-%m-%d_%H%M%S')
 
 if __name__ == '__main__':
-    animate(framerate=60,
-            downsample=30,
-            size=3*(10**5),
-            shorten_dark=15)
+    import ftp
+    pothos = Path(r'C:\Users\lanca_000\Documents\Software\Python\Plants\images\pothos')
+    ftp.get_pictures(result_folder=pothos)
+    animate(image_folder=pothos,
+            framerate=60,
+            downsample=10,
+            # start=-60*10,
+            start=datetime.now().replace(hour=0, minute=0, second=0)-timedelta(days=1),
+            size=10*(10**5),
+            # shorten_dark=5,
+            output_file='pothos.mp4')
