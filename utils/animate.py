@@ -11,6 +11,8 @@ def write_filelist(path: Path, filepaths):
 
 
 def make_gif(files, output, framerate = None, overwrite: bool = True):
+    # http://blog.pkh.me/p/21-high-quality-gif-with-ffmpeg.html
+    # https://engineering.giphy.com/how-to-make-gifs-with-ffmpeg/
     LOGGER.info(f'Concatenating {len(files)} files into {output}')
     output_kwargs = {}
     if framerate is not None:
@@ -18,8 +20,15 @@ def make_gif(files, output, framerate = None, overwrite: bool = True):
 
     temp_filelist = files[0].with_name('filelist.txt')
     write_filelist(temp_filelist, sorted(files, key=lambda f:f.name))
+
+    input = ffmpeg.input(temp_filelist, format='concat', safe=0)
+    split = input.filter_multi_output('split')
     (
-        ffmpeg.input(temp_filelist, format='concat', safe=0)
+        ffmpeg.filter(
+            [split[0], split[1].filter('palettegen', stats_mode='diff')],
+            filter_name='paletteuse',
+            dither='bayer'
+        )
         .output(output.as_posix(), **output_kwargs)
         .run(overwrite_output=overwrite)
     )
