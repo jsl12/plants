@@ -1,6 +1,8 @@
-from pathlib import Path
 import shutil
+from pathlib import Path
+
 import paramiko
+
 
 def enable_ssh(BOOT_VOLUME):
     filename = 'ssh.txt'

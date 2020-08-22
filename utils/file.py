@@ -3,9 +3,27 @@ import re
 from datetime import datetime, timedelta
 from pathlib import Path
 
+import pandas as pd
+
 FILE_REGEX = re.compile('image_(\d+)\.jpg$')
 
 LOGGER = logging.getLogger(__name__)
+
+
+def filter_time(base: Path, start = None, end = None):
+    rgx = re.compile('\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}')
+    s = pd.Series([f for f in base.glob('*.*') if rgx.match(f.name)])
+    s.index = s.apply(lambda s:datetime.strptime(s.name[:19], '%Y-%m-%d_%H-%M-%S'))
+    s = s.sort_index()
+
+    if start is not None:
+        s = s[start:]
+
+    if end is not None:
+        s = s[:end]
+
+    return s
+
 
 def convert_filename(path: Path, name:str):
     """

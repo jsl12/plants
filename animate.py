@@ -1,8 +1,10 @@
 import os
 import re
+from datetime import datetime
 from pathlib import Path
-from datetime import datetime, timedelta
+
 import pandas as pd
+
 
 def animate(image_folder='images',
             output_file='timelapse.mp4',
@@ -14,11 +16,10 @@ def animate(image_folder='images',
         image_folder = image_folder.resolve()
 
     setup_images(image_folder, **kwargs)
-    cmd = 'ffmpeg -y'
-    cmd += ' -f concat -safe 0 -i {}'.format('gif_files.txt')
+    cmd = 'ffmpeg -y -f concat -safe 0 -i gif_files.txt'
     if framerate is not None:
-        cmd += ' -framerate {}'.format(framerate)
-    cmd += ' {}'.format(output_file)
+        cmd += f' -framerate {framerate}'
+    cmd += f' {output_file}'
     os.system(cmd)
 
 
@@ -63,10 +64,10 @@ def setup_images(path,
     FILE = Path.cwd() / 'gif_files.txt'
     with open(FILE, 'w') as file:
         for i, row in df.iterrows():
-            file.write('file \'{}\'\n'.format(row['Path'].relative_to(Path.cwd())))
+            file.write(f'file \'{row["Path"].relative_to(Path.cwd())}\'\n'
         file.write('duration 30\n')
 
-    print('{} files set up in {}'.format(len(df), FILE.name))
+    print(f'{len(df)} files set up in {FILE.name}')
     return FILE
 
 def timestamp(file):
@@ -79,9 +80,9 @@ if __name__ == '__main__':
     ftp.get_pictures(result_folder=pothos)
     animate(image_folder=pothos,
             framerate=60,
-            downsample=10,
+            downsample=30,
             # start=-60*10,
-            start=datetime.now().replace(hour=0, minute=0, second=0)-timedelta(days=1),
+            # start=datetime.now().replace(hour=0, minute=0, second=0)-timedelta(days=2),
             size=10*(10**5),
             # shorten_dark=5,
             output_file='pothos.mp4')
