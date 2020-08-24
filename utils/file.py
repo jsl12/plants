@@ -10,10 +10,18 @@ FILE_REGEX = re.compile('image_(\d+)\.jpg$')
 LOGGER = logging.getLogger(__name__)
 
 
-def filter_time(base: Path, start = None, end = None):
+def filter_time(base: Path, glob: str = '*.*',  start = None, end = None, date_pattern: str = '%Y-%m-%d_%H-%M-%S') -> pd.Series:
+    """
+    Returns a Series of paths filtered by start/stop times enocded with the pattern
+
+    :param base:
+    :param start:
+    :param end:
+    :return:
+    """
     rgx = re.compile('\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}')
-    s = pd.Series([f for f in base.glob('*.*') if rgx.match(f.name)])
-    s.index = s.apply(lambda s:datetime.strptime(s.name[:19], '%Y-%m-%d_%H-%M-%S'))
+    s = pd.Series([f for f in base.glob(glob) if rgx.match(f.name)])
+    s.index = s.apply(lambda s:datetime.strptime(s.name[:19], date_pattern))
     s = s.sort_index()
 
     if start is not None:

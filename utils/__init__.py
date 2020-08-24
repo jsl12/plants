@@ -2,6 +2,7 @@ from datetime import datetime
 from pathlib import Path
 
 from utils.animate import timelapse
+from utils.file import convert_filename
 from utils.file import filter_time
 from utils.sun import get_twilights
 
@@ -18,3 +19,8 @@ def day(source: Path, output_folder: Path, suffix: str = None, **kwargs):
         output=output_folder / f'{datetime.now().strftime("%Y-%m-%d")}_{suffix or "daybreak"}.mp4',
         **kwargs
     )
+
+def convert_files(source: Path, name: str, glob: str = '*.jpg'):
+    files = sorted([f for f in source.glob(glob)], key=lambda f: f.name)
+    for f in files:
+        convert_filename(f, name=name)
