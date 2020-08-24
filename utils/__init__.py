@@ -6,7 +6,7 @@ from utils.file import filter_time
 from utils.sun import get_twilights
 
 
-def daybreak(source: Path, output_folder: Path, **kwargs):
+def day(source: Path, output_folder: Path, suffix: str = None, **kwargs):
     df = get_twilights()
     files = filter_time(
         source,
@@ -15,6 +15,6 @@ def daybreak(source: Path, output_folder: Path, **kwargs):
     )
     timelapse(
         files=files.to_list(),
-        output=output_folder / f'{datetime.now().strftime("%Y-%m-%d")}_daybreak.mp4',
+        output=output_folder / f'{datetime.now().strftime("%Y-%m-%d")}_{suffix or "daybreak"}.mp4',
         **kwargs
     )
