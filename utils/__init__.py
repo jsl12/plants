@@ -1,10 +1,10 @@
 from datetime import datetime
 from pathlib import Path
 
-from utils.animate import timelapse
-from utils.file import convert_filename
-from utils.file import filter_time
-from utils.sun import get_twilights
+from .animate import timelapse
+from .file import convert_filename
+from .file import filter_time
+from .sun import get_twilights
 
 
 def day(source: Path, output_folder: Path, suffix: str = None, **kwargs):

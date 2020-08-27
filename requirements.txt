@@ -1,6 +1,4 @@
-beautifulsoup4
-requests
-paramiko
-lxml
 pandas
+paramiko
 ffmpeg-python
+pvlib
