@@ -4,13 +4,30 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 import pandas as pd
-
-FILE_REGEX = re.compile('image_(\d+)\.jpg$')
+from pvlib import solarposition
 
 LOGGER = logging.getLogger(__name__)
 
+FILE_REGEX = re.compile('image_(\d+)\.jpg$')
 
-def filter_time(base: Path, glob: str = '*.*',  start = None, end = None, date_pattern: str = '%Y-%m-%d_%H-%M-%S') -> pd.Series:
+DATE_REGEX = re.compile('\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}')
+
+
+def dated_files(base: Path, glob: str = '*.*', time_zone: str = 'US/Central') -> pd.Series:
+    s = pd.Series([f for f in base.glob(glob) if DATE_REGEX.match(f.name)])
+    s.index = pd.DatetimeIndex(s.apply(lambda s:datetime.strptime(s.name[:19], '%Y-%m-%d_%H-%M-%S'))).tz_localize(time_zone)
+    s = s.sort_index()
+    return s
+
+
+def positioned_files(base: Path, glob: str = '*.*') -> pd.Series:
+    files = dated_files(base, glob)
+    pos = solarposition.get_solarposition(files.index, 30.250657, -97.748108)
+    pos['path'] = files
+    return pos
+
+
+def filter_time(base: Path, glob: str = '*.*',  start = None, end = None) -> pd.Series:
     """
     Returns a Series of paths filtered by start/stop times enocded with the pattern
 
@@ -19,10 +36,8 @@ def filter_time(base: Path, glob: str = '*.*',  start = None, end = None, date_p
     :param end:
     :return:
     """
-    rgx = re.compile('\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}')
-    s = pd.Series([f for f in base.glob(glob) if rgx.match(f.name)])
-    s.index = s.apply(lambda s:datetime.strptime(s.name[:19], date_pattern))
-    s = s.sort_index()
+
+    s = dated_files(base, glob)
 
     if start is not None:
         s = s[start:]

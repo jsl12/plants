@@ -3,20 +3,35 @@ from pathlib import Path
 
 from .animate import timelapse
 from .file import convert_filename
-from .file import filter_time
+from .file import positioned_files
 from .sun import get_twilights
 
 
-def day(source: Path, output_folder: Path, suffix: str = None, downsample: int = None, **kwargs):
-    df = get_twilights()
-    files = filter_time(
-        source,
-        start=df.loc['Civil Twilight', 'Begin'].iloc[0],
-        end=df.loc['Civil Twilight', 'End'].iloc[1]
-    )
+def day(
+        base: Path,
+        output_folder: Path,
+        suffix: str = None,
+        downsample: int = None,
+        min_elevation: int = None,
+        max_elevation: int = None,
+        increasing: bool = True,
+        **kwargs
+):
+    files = positioned_files(base, '*.jpg')
+
+    if min_elevation is not None:
+        files = files[files.apparent_elevation >= min_elevation]
+
+    if max_elevation is not None:
+        files = files[files.apparent_elevation <= max_elevation]
+
+    if increasing:
+        files = files[files.apparent_elevation.diff() > 0]
+
     files = files.iloc[::downsample]
+
     timelapse(
-        files=files.to_list(),
+        files=files.path.to_list(),
         output=output_folder / f'{datetime.now().strftime("%Y-%m-%d")}_{suffix or "daybreak"}.mp4',
         **kwargs
     )

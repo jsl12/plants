@@ -5,6 +5,7 @@ import ffmpeg
 
 LOGGER = logging.getLogger(__name__)
 
+
 def write_filelist(path: Path, filepaths):
     with path.open('w') as file:
         file.writelines([f'file {f.as_posix()}\n' for f in filepaths])
@@ -46,10 +47,3 @@ def improve_colors(input: Path, output: Path, overwrite:bool = True):
         .output(output.with_suffix('.gif').as_posix())
         .run(overwrite_output=overwrite)
     )
-
-
-if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
-    p = Path(r'H:\temp\plants')
-    files = sorted([f for f in p.glob('*_patio.jpg')], key=lambda f:f.name)
-    timelapse(files[:100], Path(r'C:\Users\lanca\OneDrive\Documents\Software\Plants\temp\test.gif'), framerate=30, colors=True)
