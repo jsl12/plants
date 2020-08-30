@@ -5,6 +5,7 @@ from .animate import timelapse
 from .file import convert_filename
 from .file import positioned_files
 from .sun import get_twilights
+from .temp import read_temp
 
 
 def day(
