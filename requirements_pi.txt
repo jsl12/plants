@@ -3,3 +3,4 @@ paramiko
 ffmpeg-python
 pvlib
 picamera
+click
