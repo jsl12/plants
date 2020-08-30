@@ -46,15 +46,16 @@ def sql_conn(db_file)-> sqlite3.Connection:
         return conn
 
 
-def record_temp(db_file: str, table_name: str = 'temp_readings'):
+def record_temp(db_file: str, table_name: str = 'temp_readings', create_table: bool = False):
     conn = sql_conn(db_file)
     try:
         with conn:
-            create_table_command = f"""CREATE TABLE IF NOT EXISTS {table_name} (
-                                        time datetime PRIMARY KEY,
-                                        temp real NOT NULL
-                                    );"""
-            conn.execute(create_table_command)
+            if create_table:
+                create_table_command = f"""CREATE TABLE IF NOT EXISTS {table_name} (
+                                            time datetime PRIMARY KEY,
+                                            temp real NOT NULL
+                                        );"""
+                conn.execute(create_table_command)
 
             insert_value_command = f'INSERT INTO {table_name}(time,temp) VALUES(?,?);'
             conn.execute(insert_value_command, (datetime.now(), read_temp()))
@@ -75,5 +76,3 @@ if __name__ == '__main__':
     print(f'{read_temp():.1f} C')
     p = Path('/home/pi/Documents/plants/temps.db')
     record_temp(p)
-    df = read_temp_df(p)
-    print(df.iloc[-5:])

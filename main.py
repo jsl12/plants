@@ -9,6 +9,8 @@ import pandas as pd
 from picamera import PiCamera
 from pvlib import solarposition
 
+from utils.temp import read_temp
+
 LOGGER = logging.getLogger(__name__)
 
 @click.command()
@@ -45,7 +47,7 @@ def take_picture(
     pic_date = datetime.now()
 
     if text_size is not None:
-        cam.annotate_text = f'{pic_date.strftime("%Y-%m-%d %H:%M:%S")}, Elevation: {pos.apparent_elevation:.1f}, Azimuth: {pos.azimuth:.1f}'
+        cam.annotate_text = f'{pic_date.strftime("%Y-%m-%d %H:%M:%S")}, Elevation: {pos.apparent_elevation:.1f}, Azimuth: {pos.azimuth:.1f}, Temp: {read_temp():.1f} C'
         cam.annotate_text_size = text_size
 
     res_file = Path(res_folder) / f'{pic_date.strftime("%Y-%m-%d_%H-%M-%S")}_{name}.jpg'
