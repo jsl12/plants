@@ -33,9 +33,15 @@ def get_pictures(result_folder=None, regex='\.(jpg|png)$', remove=False):
             elif remove:
                 conn.delete(f[0])
 
-def send_file(file):
+def send_file(file: Path, dest_folder: Path = None):
+    dest = (dest_folder / file.name) if dest_folder is not None else Path(file.name)
     with ftplib.FTP(IP, USER, PASSWORD) as conn:
-        conn.storbinary('STOR {}'.format(file.name), open(file, 'rb'))
+        try:
+            conn.storbinary(f'STOR {dest.as_posix()}', file.open('rb'))
+        except ftplib.error_perm as e:
+            print(e)
+            print(dest.as_posix())
+
 
 if __name__ == '__main__':
     get_pictures()
