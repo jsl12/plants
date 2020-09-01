@@ -50,3 +50,16 @@ def convert_to_binary(pulses: pd.Series, threshold: float = .0003) -> pd.Series:
     res.loc[ones] = 1
     res.loc[zeroes] = 0
     return res.dropna().apply(int)
+
+def pulse_lengths(scan_data: pd.Series):
+    pulses = process_pulses(scan_data, 1)
+    pauses = process_pulses(scan_data, 0)
+
+    period = signal_groups(scan_data).apply(lambda df: df.index.to_series().diff().mean()).mean().total_seconds()
+    digits = len(str(period)) - 2
+
+    short = round(pulses[(pulses <= .0003)&(pulses >= .0001)].mean(), digits)
+    long = round(pulses[(pulses >= .0003)&(pulses <= .001)].mean(), digits)
+    pause = round(pauses[pauses >= .001].mean(), digits)
+
+    return period, short, long, pause
