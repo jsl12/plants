@@ -9,7 +9,7 @@ LOGGER = logging.getLogger(__name__)
 
 @click.command()
 @click.argument('pause', type=float, nargs=1, default=2.0)
-@click.option('--type', '-t', type=int, nargs=1, default='off')
+@click.option('--type', '-t', type=str, default='off')
 @click.option('--gpio', '-g', type=int, default=21)
 @click.option('--repeat', '-r', type=int, default=10)
 def main(pause: float, type: str, gpio: int, repeat: int):
