@@ -5,3 +5,4 @@ pvlib
 picamera
 click
 RPi.GPIO
+rpi-rf

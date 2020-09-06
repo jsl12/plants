@@ -9,7 +9,7 @@ import pandas as pd
 from picamera import PiCamera
 from pvlib import solarposition
 
-from utils.temp import read_temp
+from temp import read_temp
 
 LOGGER = logging.getLogger(__name__)
 

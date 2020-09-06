@@ -1,15 +1,25 @@
+import logging
 from datetime import datetime
 from pathlib import Path
 
 from .animate import timelapse
+from .devices import RPI_3, PI_0W
 from .file import convert_filename
 from .file import positioned_files
-from .temp import read_temp
+
+LOGGER = logging.getLogger(__name__)
+
+
+def make_both(**kwargs):
+    assert 'suffix' in kwargs
+    orig_suffix = kwargs.pop('suffix')
+    day(suffix=f'{orig_suffix}_720p', scale='hd720', **kwargs)
+    day(suffix=orig_suffix, **kwargs)
 
 
 def day(
         base: Path,
-        output_folder: Path,
+        output_dir: Path,
         suffix: str = None,
         downsample: int = None,
         min_elevation: int = None,
@@ -32,11 +42,6 @@ def day(
 
     timelapse(
         files=files.path.to_list(),
-        output=output_folder / f'{datetime.now().strftime("%Y-%m-%d")}_{suffix or "daybreak"}.mp4',
+        output=output_dir / f'{datetime.now().strftime("%Y-%m-%d")}_{suffix or "daybreak"}.mp4',
         **kwargs
     )
-
-def convert_files(source: Path, name: str, glob: str = '*.jpg'):
-    files = sorted([f for f in source.glob(glob)], key=lambda f: f.name)
-    for f in files:
-        convert_filename(f, name=name)

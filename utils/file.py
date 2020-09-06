@@ -1,3 +1,4 @@
+import ftplib
 import logging
 import re
 from datetime import datetime, timedelta
@@ -5,6 +6,8 @@ from pathlib import Path
 
 import pandas as pd
 from pvlib import solarposition
+
+from .devices import RPI_3
 
 LOGGER = logging.getLogger(__name__)
 
@@ -69,7 +72,21 @@ def convert_filename(path: Path, name:str):
                 LOGGER.info(f'Renamed {path.name} to {new_filename.name}')
 
 
-if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
-    for f in Path(r'H:\temp\plants').glob('*.jpg'):
-        convert_filename(f, 'patio')
+def convert_files(source: Path, name: str, glob: str = '*.jpg'):
+    files = sorted([f for f in source.glob(glob)], key=lambda f: f.name)
+    for f in files:
+        convert_filename(f, name=name)
+
+
+def send_file(file: Path, dest_folder: Path = None):
+    dest = (dest_folder / file.name) if dest_folder is not None else Path(file.name)
+    with ftplib.FTP(*RPI_3) as conn:
+        LOGGER.info(f'Opened connection to {RPI_3[1]}:{RPI_3[2]}@{RPI_3[0]}')
+        try:
+            LOGGER.info(f'Sending file to {dest.as_posix()}')
+            conn.storbinary(f'STOR {dest.as_posix()}', file.open('rb'))
+        except ftplib.error_perm as e:
+            print(e)
+            print(dest.as_posix())
+        else:
+            LOGGER.info(f'Success')
