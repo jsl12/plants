@@ -18,6 +18,10 @@ DATE_REGEX = re.compile('\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}')
 
 def dated_files(base: Path, glob: str = '*.*', time_zone: str = 'US/Central') -> pd.Series:
     s = pd.Series([f for f in base.glob(glob) if DATE_REGEX.match(f.name)])
+
+    if s.shape[0] == 0:
+        raise ValueError(f'No files found in {base}')
+
     s.index = pd.DatetimeIndex(s.apply(lambda s:datetime.strptime(s.name[:19], '%Y-%m-%d_%H-%M-%S'))).tz_localize(time_zone)
     s = s.sort_index()
     return s

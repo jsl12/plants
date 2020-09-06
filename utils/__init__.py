@@ -2,6 +2,9 @@ import logging
 from datetime import datetime
 from pathlib import Path
 
+import numpy as np
+import pandas as pd
+
 from .animate import timelapse
 from .devices import RPI_3, PI_0W
 from .file import convert_filename
@@ -29,14 +32,19 @@ def day(
 ):
     files = positioned_files(base, '*.jpg')
 
+    mask = pd.Series(np.full(files.shape[0], True), index=files.index)
+
     if min_elevation is not None:
-        files = files[files.apparent_elevation >= min_elevation]
+        mask &= files.apparent_elevation >= min_elevation
 
     if max_elevation is not None:
-        files = files[files.apparent_elevation <= max_elevation]
+        mask &= files.apparent_elevation <= min_elevation
 
     if increasing:
-        files = files[files.apparent_elevation.diff() > 0]
+        mask &= files.apparent_elevation.diff() > 0
+
+    if mask.any() == False:
+        raise ValueError(f'All files removed by masks')
 
     files = files.iloc[::downsample]
 
