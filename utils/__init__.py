@@ -23,7 +23,7 @@ def make_both(**kwargs):
 def day(
         base: Path,
         output_dir: Path,
-        suffix: str = None,
+        suffix: str,
         downsample: int = None,
         min_elevation: int = None,
         max_elevation: int = None,
@@ -38,18 +38,20 @@ def day(
         mask &= files.apparent_elevation >= min_elevation
 
     if max_elevation is not None:
-        mask &= files.apparent_elevation <= min_elevation
+        mask &= files.apparent_elevation <= max_elevation
 
     if increasing:
         mask &= files.apparent_elevation.diff() > 0
 
     if mask.any() == False:
         raise ValueError(f'All files removed by masks')
+    else:
+        files = files[mask]
 
     files = files.iloc[::downsample]
 
     timelapse(
         files=files.path.to_list(),
-        output=output_dir / f'{datetime.now().strftime("%Y-%m-%d")}_{suffix or "daybreak"}.mp4',
+        output=output_dir / f'{datetime.now().strftime("%Y-%m-%d")}_{suffix}.mp4',
         **kwargs
     )
