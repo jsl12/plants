@@ -39,5 +39,6 @@ def main(pause: float, type: str, gpio: int, repeat: int):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.INFO, datefmt='%Y-%m-%d %H:%M:%S',
+                        format='%(asctime)-15s - [%(levelname)s] %(module)s: %(message)s')
     main()
