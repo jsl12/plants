@@ -1,8 +1,17 @@
 PULSE_LENGTH = 182
 PROTOCOL = 1
 
-OUTLET_2_ON = 1381827
-OUTLET_2_OFF = 1381836
-
-OUTLET_3_ON = 1382147
-OUTLET_3_OFF = 1382156
+OUTLETS = [
+    {
+        'on': 1381683,
+        'off': 1381692
+    },
+    {
+        'on': 1381827,
+        'off': 1381836
+    },
+    {
+        'on': 1382147,
+        'off': 1382156
+    },
+]
