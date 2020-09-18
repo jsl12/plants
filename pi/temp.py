@@ -29,8 +29,6 @@ def device(w1_device_folder: str = '/sys/bus/w1/devices/') -> Path:
         return next(Path(w1_device_folder).glob('28*')) / 'w1_slave'
     except StopIteration as e:
         LOGGER.info(f'No devices found with the glob 28*')
-    else:
-        return device
 
 
 def read_lines() -> List[str]:
