@@ -6,6 +6,7 @@ import tkinter.ttk as ttk
 from datetime import datetime, timedelta
 from pathlib import Path
 
+import pandas as pd
 from matplotlib.axes import Axes
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.dates import DateFormatter, AutoDateLocator
@@ -52,6 +53,7 @@ class App:
     @property
     def df(self):
         df = read_temp_df(self.controls.db).applymap(lambda v: (v*9/5)+32)
+        df = df.groupby(pd.Grouper(freq='10min', origin='start_day')).mean()
 
         rolling = self.controls.rolling
         if rolling is not None:
@@ -183,6 +185,7 @@ class Controls(tk.Frame):
             return int(self.plot_settings[2][1].get())
         except:
             return
+
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
