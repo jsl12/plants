@@ -63,7 +63,7 @@ class App:
     @property
     def df(self):
         df = read_temp_df(self.controls.db).applymap(lambda v: (v*9/5)+32)
-        df = df.groupby(pd.Grouper(freq='10min', origin='start_day')).mean()
+        df = df.groupby(pd.Grouper(freq='10min')).mean()
 
         rolling = self.controls.rolling
         if rolling is not None:
