@@ -1,5 +1,4 @@
 import logging
-import random
 import sqlite3
 import threading
 import time
@@ -71,8 +70,8 @@ def record_temps(num_reads: int, timing: float, db_file: Path, table_name: str =
     def read(i):
         try:
             with lock:
-                data[i], times[i] = random.random(), datetime.now()
-                # data[i], times[i] = read_temp(), datetime.now()
+                # data[i], times[i] = random.random(), datetime.now()
+                data[i], times[i] = read_temp(), datetime.now()
         except Exception as e:
             LOGGER.exception(e)
         else:
