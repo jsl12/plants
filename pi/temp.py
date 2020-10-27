@@ -63,7 +63,7 @@ def read_temp_df(db_file: Path, table_name: str = 'temp_readings') -> pd.DataFra
     return df
 
 
-def record_temps(num_reads: int, timing: float, db_file: Path, table_name: str, create_table: bool = False):
+def record_temps(num_reads: int, timing: float, db_file: Path, table_name: str = 'temp_readings', create_table: bool = False):
     data = np.full(num_reads, 0.0)
     times = np.full(num_reads, datetime.now())
     lock = threading.Lock()
