@@ -26,6 +26,13 @@ class App:
 
         self.fig = Figure(figsize=(8, 6), dpi=100, facecolor='white')
         ax = self.fig.add_subplot(111)
+        pad = .05
+        self.fig.subplots_adjust(
+            left=pad,
+            right=1-pad,
+            bottom=pad,
+            top=1-pad
+        )
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.root)
         self.canvas.draw()
 
