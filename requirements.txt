@@ -3,3 +3,5 @@ paramiko
 ffmpeg-python
 pvlib
 tkcalendar
+pywin32
+Pillow

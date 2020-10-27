@@ -1,4 +1,5 @@
 import ftplib
+import io
 import logging
 import threading
 import tkinter as tk
@@ -7,6 +8,8 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 import pandas as pd
+import win32clipboard
+from PIL import Image
 from matplotlib.axes import Axes
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.dates import DateFormatter, AutoDateLocator
@@ -78,6 +81,21 @@ class App:
         ax.xaxis.set_major_formatter(DateFormatter('%b-%d %H'))
         ax.grid(True)
         self.canvas.draw()
+        self.fig_to_clipboard()
+
+    def fig_to_clipboard(self):
+        with io.BytesIO() as buf:
+            self.fig.savefig(buf)
+            im = Image.open(buf)
+
+            with io.BytesIO() as output:
+                im.convert("RGB").save(output, "BMP")
+                data = output.getvalue()[14:]  # The file header off-set of BMP is 14 bytes
+
+        win32clipboard.OpenClipboard()
+        win32clipboard.EmptyClipboard()
+        win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)  # DIB = device independent bitmap
+        win32clipboard.CloseClipboard()
 
 
 class Controls(tk.Frame):
